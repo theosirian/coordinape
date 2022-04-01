@@ -101,7 +101,7 @@ export const rFullCircle = selector<IFullCircle>({
 
     const pending = iti(
       iti(fullCircle.values())
-        .flat(fc => fc.pending_gifts)
+        .flat(fc => fc.pending_token_gifts)
         .toArray()
     );
     const pastGifts = iti(

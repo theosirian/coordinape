@@ -57,7 +57,7 @@ const SelectedCircleScope = () => {
       scope.setTag('selected_circle_id', selectedCircle.id);
       scope.setTag(
         'selected_circle',
-        `${selectedCircle?.protocol?.name}-${selectedCircle?.name}`
+        `${selectedCircle?.organization?.name}-${selectedCircle?.name}`
       );
       scope.setTag('connector_name', connectorName);
       scope.setTag('has_admin_view', hasAdminView);

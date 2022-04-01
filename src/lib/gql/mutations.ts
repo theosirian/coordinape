@@ -169,7 +169,7 @@ export const createCircle = async (
   }
   return {
     ...createCircle.circle,
-    protocol: createCircle.circle.organization,
+    organization: createCircle.circle.organization,
   };
 };
 

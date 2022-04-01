@@ -110,7 +110,7 @@ export const SummonCirclePage = () => {
       uniqBy(
         myUsers
           .filter(u => u.isCircleAdmin)
-          .map(({ circle: { protocol } }) => protocol),
+          .map(({ circle: { organization } }) => organization),
         'id'
       ),
     [myUsers]

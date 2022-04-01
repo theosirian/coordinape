@@ -1,3 +1,5 @@
+import { IApiFullCircle, IApiProfile, IApiUser, IProtocol } from '../../types';
+
 import { client } from './client';
 
 export const getCurrentEpoch = async (
@@ -18,4 +20,171 @@ export const getCurrentEpoch = async (
     ],
   });
   return currentEpoch;
+};
+
+export const getFullCircle = async (
+  circle_id: number
+): Promise<IApiFullCircle> => {
+  const { circles_by_pk, circle } = await client.query({
+    __alias: {
+      circle: {
+        circles_by_pk: [
+          {
+            id: circle_id,
+          },
+          {
+            id: true,
+            name: true,
+            logo: true,
+            default_opt_in: true,
+            is_verified: true,
+            alloc_text: true,
+            team_sel_text: true,
+            token_name: true,
+            vouching: true,
+            min_vouches: true,
+            nomination_days_limit: true,
+            vouching_text: true,
+            only_giver_vouch: true,
+            team_selection: true,
+            created_at: true,
+            updated_at: true,
+            protocol_id: true,
+            organization: {
+              id: true,
+              created_at: true,
+              name: true,
+              updated_at: true,
+            },
+            auto_opt_out: true,
+          },
+        ],
+      },
+    },
+    circles_by_pk: [
+      {
+        id: circle_id,
+      },
+      {
+        nominees: [
+          {},
+          {
+            id: true,
+            name: true,
+            address: true,
+            nominated_by_user_id: true,
+            circle_id: true,
+            description: true,
+            vouches_required: true,
+            user_id: true,
+            ended: true,
+            nominated_date: true,
+            expiry_date: true,
+            created_at: true,
+            updated_at: true,
+            nominations: [
+              {},
+              {
+                id: true,
+                address: true,
+                name: true,
+              },
+            ],
+          },
+        ],
+        epochs: [
+          {},
+          {
+            id: true,
+            number: true,
+            start_date: true,
+            end_date: true,
+            circle_id: true,
+            created_at: true,
+            updated_at: true,
+            ended: true,
+            grant: true,
+            notified_before_end: true,
+            notified_start: true,
+            notified_end: true,
+            days: true,
+            repeat: true,
+            repeat_day_of_month: true,
+          },
+        ],
+        users: [
+          {},
+          {
+            id: true,
+            circle_id: true,
+            address: true,
+            name: true,
+            non_giver: true,
+            fixed_non_receiver: true,
+            starting_tokens: true,
+            bio: true,
+            non_receiver: true,
+            give_token_received: true,
+            give_token_remaining: true,
+            epoch_first_visit: true,
+            created_at: true,
+            updated_at: true,
+            deleted_at: true,
+            role: true,
+          },
+        ],
+        token_gifts: [
+          {
+            where: {
+              epoch_id: {
+                _is_null: false,
+              },
+            },
+          },
+          {
+            id: true,
+            circle_id: true,
+            epoch_id: true,
+            sender_id: true,
+            sender_address: true,
+            recipient_id: true,
+            recipient_address: true,
+            tokens: true,
+            // TODO: note is missing! it's marked as not selectable for user perms
+            dts_created: true,
+          },
+        ],
+        pending_token_gifts: [
+          {
+            where: {
+              epoch_id: {
+                _is_null: false,
+              },
+            },
+          },
+          {
+            id: true,
+            circle_id: true,
+            epoch_id: true,
+            sender_id: true,
+            sender_address: true,
+            recipient_id: true,
+            recipient_address: true,
+            tokens: true,
+            // TODO: note is missing! it's marked as not selectable for user perms
+            dts_created: true,
+          },
+        ],
+      },
+    ],
+  });
+  if (
+    !circles_by_pk ||
+    !circle.circles_by_pk ||
+    !circle.circles_by_pk.organization
+  ) {
+    throw 'nope';
+  }
+
+  return { ...circles_by_pk, circle: circle.circles_by_pk };
 };

@@ -341,7 +341,7 @@ const AdminPage = ({ legacy }: { legacy?: boolean }) => {
             new Blob(binaryData, { type: 'text/csv' })
           );
           const a = document.createElement('a');
-          a.download = `${selectedCircle?.protocol.name}-${selectedCircle?.name}-epoch-${epoch}.csv`;
+          a.download = `${selectedCircle?.organization.name}-${selectedCircle?.name}-epoch-${epoch}.csv`;
           a.href = href;
           a.click();
           a.href = '';

@@ -19,7 +19,7 @@ export interface IApiFullCircle {
   circle: IApiCircle;
   epochs: IApiEpoch[];
   nominees: IApiNominee[];
-  pending_gifts: IApiTokenGift[];
+  pending_token_gifts: IApiTokenGift[];
   token_gifts: IApiTokenGift[];
   users: IApiUser[];
 }

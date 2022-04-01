@@ -106,7 +106,7 @@ const CircleButton = ({
     <Button className={classes.circle} key={circle.id} onClick={onClick}>
       <div className={classes.circleContent}>
         <span className={classes.circleTitle}>
-          {circle.protocol.name} / {circle.name}
+          {circle.organization.name} / {circle.name}
         </span>
         <span className={classes.circleDescription}>{timingMessage}</span>
       </div>
