@@ -23,11 +23,11 @@ export interface IEpochTimings {
 export interface IApiEpoch {
   id: number;
   number?: number;
-  start_date?: string; // 2021-07-09T00:00:00.000000Z
-  end_date?: string;
+  start_date: string; // 2021-07-09T00:00:00.000000Z
+  end_date: string;
   circle_id: number;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
   ended: boolean;
   grant: string; // 0.00 - stored as decimal in database
   notified_before_end?: string;

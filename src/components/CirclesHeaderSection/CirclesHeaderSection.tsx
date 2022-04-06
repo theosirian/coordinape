@@ -32,7 +32,7 @@ export const CirclesHeaderSection = (props: { handleOnClick?(): void }) => {
   const { selectAndFetchCircle } = useApiBase();
   const { myCircles } = useCircles();
   const groupedCircles = useMemo(
-    () => toPairs(groupBy(myCircles, c => c.protocol.name)),
+    () => toPairs(groupBy(myCircles, c => c.organization.name)),
     [myCircles]
   );
 
