@@ -65,7 +65,7 @@ const manifest = {
     circle,
     epochs: [],
     nominees: [],
-    pending_gifts: [],
+    pending_token_gifts: [],
     token_gifts: [],
     users: [],
   },
