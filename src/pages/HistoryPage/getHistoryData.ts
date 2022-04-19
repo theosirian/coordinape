@@ -18,7 +18,7 @@ export const getHistoryData = (circleId: number, userId: number) =>
           { aggregate: { count: [{}, true] } },
         ],
         __alias: {
-          future: {
+          futureEpoch: {
             epochs: [
               {
                 where: { start_date: { _gt: 'now' } },
@@ -28,7 +28,7 @@ export const getHistoryData = (circleId: number, userId: number) =>
               { start_date: true, end_date: true },
             ],
           },
-          current: {
+          currentEpoch: {
             epochs: [
               {
                 where: { ended: { _eq: false }, start_date: { _lt: 'now' } },
@@ -37,7 +37,7 @@ export const getHistoryData = (circleId: number, userId: number) =>
               { start_date: true, end_date: true },
             ],
           },
-          past: {
+          pastEpochs: {
             epochs: [
               {
                 where: { ended: { _eq: true } },
@@ -52,7 +52,7 @@ export const getHistoryData = (circleId: number, userId: number) =>
                   { aggregate: { sum: { tokens: true } } },
                 ],
                 __alias: {
-                  received: {
+                  receivedGifts: {
                     token_gifts: [
                       { where: { recipient_id: { _eq: userId } } },
                       {
@@ -63,7 +63,7 @@ export const getHistoryData = (circleId: number, userId: number) =>
                       },
                     ],
                   },
-                  sent: {
+                  sentGifts: {
                     token_gifts: [
                       { where: { sender_id: { _eq: userId } } },
                       {

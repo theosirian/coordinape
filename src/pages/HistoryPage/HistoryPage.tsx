@@ -34,7 +34,7 @@ export const HistoryPage = () => {
   const circle = query.data?.circles_by_pk;
   const me = circle?.users[0];
 
-  const nextEpoch = circle?.future[0];
+  const nextEpoch = circle?.futureEpoch[0];
   const nextEpochStartLabel = useMemo(() => {
     if (!nextEpoch) return '';
     const date = DateTime.fromISO(nextEpoch.start_date);
@@ -44,8 +44,8 @@ export const HistoryPage = () => {
     return `starts in ${diff}, on ${date.toFormat('LLL d')}`;
   }, [nextEpoch]);
 
-  const currentEpoch = circle?.current[0];
-  const pastEpochs = circle?.past || [];
+  const currentEpoch = circle?.currentEpoch[0];
+  const pastEpochs = circle?.pastEpochs || [];
 
   // TODO fetch only data for page shown
   const [page, setPage] = useState(0);
@@ -137,4 +137,4 @@ export type QueryResult = Awaited<ReturnType<typeof getHistoryData>>;
 export type QueryEpoch = Exclude<
   QueryResult['circles_by_pk'],
   undefined
->['past'][0];
+>['pastEpochs'][0];
