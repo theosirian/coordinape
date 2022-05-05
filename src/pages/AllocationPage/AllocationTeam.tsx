@@ -385,7 +385,10 @@ const AllocationTeam = () => {
           </div>
         </div> */}
         </div>
-        <div className={classes.teammatesContainer}>
+        <div
+          className={classes.teammatesContainer}
+          data-testid="eligibleTeammates"
+        >
           {availableTeammates
             .filter(a => !a.non_receiver)
             .sort((a, b) => {
