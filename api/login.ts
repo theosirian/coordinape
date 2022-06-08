@@ -1,15 +1,21 @@
 import assert from 'assert';
-import { randomBytes, createHash } from 'crypto';
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { DateTime, Settings } from 'luxon';
-import { SiweMessage } from 'siwe';
+import { SiweMessage, SiweErrorType } from 'siwe';
 
+import {
+  formatAuthHeader,
+  generateTokenString,
+  hashTokenString,
+} from '../api-lib/authHelpers';
 import { adminClient } from '../api-lib/gql/adminClient';
 import { errorResponse } from '../api-lib/HttpError';
 import { parseInput } from '../api-lib/signature';
 
 Settings.defaultZone = 'utc';
+
+const allowedDomains = (process.env.SIWE_ALLOWED_DOMAINS)?.split(",").filter(item => item !== "") || ["localhost:3000"];
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
@@ -20,11 +26,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let address;
 
     try {
+
       const message = new SiweMessage(data);
+
+      if (!allowedDomains.includes(message.domain)) {
+        return errorResponse(res, {
+          message: 'invalid domain',
+          httpStatus: 401,
+        });
+      }
+
       const verificationResult = await message.verify({
         signature,
-        // TODO: replace by configured domain
-        domain: 'domain.tld',
       });
 
       if (!verificationResult.success) {
@@ -35,11 +48,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       address = message.address;
-    } catch (e: unknown) {
-      return errorResponse(res, {
-        message: 'invalid signature: ' + e,
-        httpStatus: 401,
-      });
+    } catch (e: any) {
+      if (Object.values(SiweErrorType).some(val => val === e.error.type)){
+        return errorResponse(res, {
+          message: 'SIWE error: ' + e.error.type,
+          httpStatus: 401,
+        });
+
+      } else {
+        // Return generic error for non-SIWE exceptions
+        return errorResponse(res, {
+          message: 'login error: ' + e,
+          httpStatus: 401,
+        });
+      }
     }
 
     const { profiles } = await adminClient.query(
@@ -83,7 +105,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 abilities: '["read"]',
                 tokenable_type: 'App\\Models\\Profile',
                 tokenable_id: profile.id,
-                token: createHash('sha256').update(tokenString).digest('hex'),
+                token: hashTokenString(tokenString),
                 updated_at: now,
                 created_at: now,
                 last_used_at: now,
@@ -97,23 +119,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
       );
 
-    return res.status(200).json({ token: `${token?.id}|${tokenString}` });
+    return res
+      .status(200)
+      .json({ token: formatAuthHeader(token?.id, tokenString) });
   } catch (error: any) {
     errorResponse(res, error);
   }
-}
-
-function generateTokenString(len = 40): string {
-  const bufSize = len * 2;
-  if (bufSize > 65536) {
-    const e = new Error();
-    (e as any).code = 22;
-    e.message = `Quota exceeded: requested ${bufSize} > 65536 bytes`;
-    e.name = 'QuotaExceededError';
-    throw e;
-  }
-  const candidateString = randomBytes(bufSize).toString('base64').slice(0, len);
-  if (candidateString.includes('/') || candidateString.includes('+'))
-    return generateTokenString(len);
-  return candidateString;
 }
